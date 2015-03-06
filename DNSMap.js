@@ -118,7 +118,7 @@ function DNSMap(options){
 
 	setInterval(function(){
 		eventEmitter.emit('chunk', self.chunkDevices);
-		chunkDevices = {};
+		self.chunkDevices = {};
 	}, self._chunkTime);
 };
 

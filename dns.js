@@ -23,7 +23,10 @@ pcap_session.on('packet', function (raw_packet) {
             console.log("Timestamp:  " + (new Date(1425529415259.071).toISOString()));
             console.log("Sender MAC: " + packet.link.shost);
             console.log("Sender IP:  " + packet.link.ip.saddr);
-            
+            console.log("Sender Port:" + packet.link.ip.udp.sport);
+
+            // console.log(util.inspect(packet, { depth: null, color: true }));
+
             if (packet.link.ip.udp.dns != undefined) {
                 console.log("Packet Type: DNS");
             }
