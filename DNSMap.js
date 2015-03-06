@@ -2,11 +2,12 @@ var util = require('util'),
 	EventEmitter = require('events').EventEmitter,
     pcap = require("pcap"),
     _ = require('underscore'),
-    moment = require('moment');
+    moment = require('moment'),
+    DNSFilter = require('./DNSFilter');
 
 var eventEmitter = new EventEmitter();
 
-function DNSMap(options){
+function DNSMap(options, callback){
 	
 	var self = this;
 
@@ -17,17 +18,20 @@ function DNSMap(options){
 
 	// defaults
 	this._interface = options.interface || 'en1';
-	this._filter = options.filter || 'port 53';
+	this._captureFilter = options.captureFilter || 'port 53';
 	this._debug = options.debug || false;
 	this._debounce = options.debounce || null; // in milliseconds
 	this._debounceLock = false;
 	this._chunkTime = options.chunkTime || 30 * 1000;
+	this._useDNSFilter = options.dnsFilter || true;
 
 	this._addresses = []; // interface addresses
 	this.devices = {}; // network client dictionary keyed by mac addresses
 	this.chunkDevices = {}; // report all new dns since last chunk
 
-	var pcapSession = pcap.createSession(this._interface, this._filter);
+	if (this._debug) console.log('pcap version: ' + pcap.lib_version);
+
+	var pcapSession = pcap.createSession(this._interface, this._captureFilter);
 
 	pcapSession.findalldevs().forEach(function (dev) {
 	    
@@ -120,6 +124,8 @@ function DNSMap(options){
 		eventEmitter.emit('chunk', self.chunkDevices);
 		self.chunkDevices = {};
 	}, self._chunkTime);
+
+	this._dnsFilter = new DNSFilter(callback);
 };
 
 // returns array of objects: { domain: "", timestamp: 1}
