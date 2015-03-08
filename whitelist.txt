@@ -1,0 +1,2 @@
+^www\.[^\.]+\.(com|net|org|edu|gov|info|co)$
+^[^\.]+\.(com|net|org|edu|gov|info|co)$

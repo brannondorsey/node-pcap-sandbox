@@ -5,6 +5,7 @@ function DNSFilter(callback) {
 
 	var self = this;
 	this._blacklist = [];
+	this._whitelist = [];
 
 	fs.readFile('blacklist.txt', { encoding: 'utf-8' }, function(err, data){
 
@@ -12,13 +13,15 @@ function DNSFilter(callback) {
 
 		self._blacklist = data.split(os.EOL);
 
-		
-		for (var i = 0; i < self._blacklist.length; i++) {
-			// escape all "." characters
-			self._blacklist[i] = self._blacklist[i].replace(".", "\\.");
-		}
+		fs.readFile('whitelist.txt', { encoding: 'utf-8' }, function(err, data){
 
-		callback();
+			if (err) throw err;
+
+			self._whitelist = data.split(os.EOL);
+
+			callback();
+		});
+
 	});
 }
 
